@@ -8,10 +8,6 @@ import comment_verifier
 comment_verifier.check(inspect.getdoc(doxygen_translate_all_tags.func01),
 r"""*Hello*
 
-
-
-
-
 * some list item
 
 This is attention!
@@ -28,12 +24,7 @@ extended to many lines.
 Not everything works right now...
 ``codeword``
 
-
-
-
-
 'citationword'
-
 
 .. code-block:: c++
 
@@ -44,19 +35,9 @@ r"""Conditional comment: SOMECONDITION
 Some conditional comment
 End of conditional comment.
 
-
-
-
-
-
-
 Copyright: some copyright
 
 1970 - 2012
-
-
-
-
 
 Deprecated: Now use another function
 
@@ -66,19 +47,9 @@ and detailed description of some thing""")
 comment_verifier.check(inspect.getdoc(doxygen_translate_all_tags.func03),
 r"""Comment for **func03()**.
 
-
-
-
-
-
-
-
-
 *italicword*
 
 emphazedWord
-
-
 
 Example: someFile.txt
 Some details on using the example""")
@@ -86,31 +57,15 @@ Some details on using the example""")
 comment_verifier.check(inspect.getdoc(doxygen_translate_all_tags.func04),
 r""":raises: SuperError
 
-
-
 :math:`\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}`
 
-
 .. math::
 
     \sqrt{(x_2-x_1)^2+(y_2-y_1)^2}
 
-
-
 .. math::
 
     \sqrt{(x_2-x_1)^2+(y_2-y_1)^2}
-
-
-
-
-
-
-
-
-
-
-
 
 This will only appear in hmtl""")
 
@@ -135,51 +90,24 @@ If not: SOMECONDITION {
 
 Image: testImage.bmp("Hello, world!")
 
-
-
-
-
-
-
-
-
-
-
 Some text
 describing invariant.""")
 
 comment_verifier.check(inspect.getdoc(doxygen_translate_all_tags.func06),
 r"""Comment for **func06()**.
 
-
-
-
 This will only appear in LATeX
-
-
-
 
 * Some unordered list
 * With lots of items
 * lots of lots of items
 
-
-
-
 someMember Some description follows
-
-
-
 
 This will only appear in man""")
 
 comment_verifier.check(inspect.getdoc(doxygen_translate_all_tags.func07),
 r"""Comment for **func07()**.
-
-
-
-
-
 
 Notes: Here
 is the note!
@@ -189,15 +117,9 @@ It differs from the above function only in what argument(s) it accepts.
 
 someword
 
-
-
-
-
 Title: The paragraph title
 The paragraph text.
 Maybe even multiline
-
-
 
 :type a: int
 :param a: the first param""")
@@ -205,24 +127,11 @@ Maybe even multiline
 comment_verifier.check(inspect.getdoc(doxygen_translate_all_tags.func08),
 r"""Text after anchor.
 
-
-
-
-
-
 'Anchor description'
 
 'someAnchor' not quoted text is not part of ref tag
 
 'someAnchor'
-
-
-
-
-
-
-
-
 
 Remarks: Some remark text
 
@@ -240,33 +149,14 @@ Another remarks section
 comment_verifier.check(inspect.getdoc(doxygen_translate_all_tags.func09),
 r"""This will only appear in RTF
 
-
 See also: someOtherMethod
-
-
 
 See also: function
 
 Same as
 brief description
 
-
-
 Since: version 0.0.0.1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 :raises: superException
 
@@ -278,27 +168,14 @@ r"""TODO: Some very important task
 :type b: float
 :param b: B is mentioned again...
 
-
-
-
-
-
-
 very long
 text with tags <sometag>
-
-
-
 
 Version: 0.0.0.2
 
 Warning: This is senseless!
 
-
-
-
 This will only appear in XML
-
 
 Here goes test of symbols:
 $ @ \ & ~ < > # % " . ::

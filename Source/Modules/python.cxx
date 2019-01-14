@@ -1576,6 +1576,11 @@ public:
 	docstr = Getattr(n, "python:docstring");
 	if (!docstr && doxygenTranslator->hasDocumentation(n)) {
 	  docstr = doxygenTranslator->getDocumentation(n, 0);
+	  int num_replacements;
+	  do {
+	    num_replacements = DohReplace(docstr, "\n\n\n", "\n\n", DOH_REPLACE_FIRST);
+	  } while (num_replacements > 0);
+	  clean_newlines(docstr);
 
 	  // Avoid rebuilding it again the next time: notice that we can't do
 	  // this for the combined doc string as autodoc part of it depends on

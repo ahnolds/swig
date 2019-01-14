@@ -11,18 +11,14 @@ r"""Testing typenames converting in @ link
 superFunc(int,std::string)
 Test for std_string member
 
-
 superFunc(int,long,void*)
 Test for simple types
-
 
 superFunc(Shape::superType*)
 Test for custom types
 
-
 superFunc(int**[13])
 Test for complex types
-
 
 same works for 'See also:' links:
 

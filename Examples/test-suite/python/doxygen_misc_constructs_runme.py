@@ -24,11 +24,8 @@ return reference to self, so we can use it like this:
 CConnectionConfig config = new CConnectionConfig();
 config.discoveryPort(5534).dllPath("C:\\myWinIDEA\\connect.dll").id("main");
 
-
 All parameters are optional. Set only what is required, default values are
 used for unspecified parameters.
-
-
 
 advancedWinIDEALaunching.py Python example.""")
 
@@ -110,7 +107,6 @@ comment_verifier.check(inspect.getdoc(doxygen_misc_constructs.cycle),
 
 ['retVal < 10', 'g_counter == 23 && g_mode & 3']
 
-
 Both words should be emphasized **isystem.connect**.
 But not the last period. For **example**, comma should not be emphasized.
 Similar **for**: double colon.
@@ -126,7 +122,6 @@ Spaces at the start of line should be taken into account:
         If we set the id to ``main_``, we get:
 
             main_ctrl.setBP("func1");
-
 
 :type fileName: string
 :param fileName: name of the log file"""

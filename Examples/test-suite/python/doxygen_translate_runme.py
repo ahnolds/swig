@@ -20,11 +20,9 @@ Author: Zubr
 
 'citationword'
 
-
 .. code-block:: c++
 
      some test code
-
 
 Conditional comment: SOMECONDITION
 Some conditional comment
@@ -61,20 +59,11 @@ If not: SOMECONDITION {
 
 Image: testImage.bmp("Hello, world!")
 
-
-
 * Some unordered list
 * With lots of items
 * lots of lots of items
 
-
-
 someMember Some description follows
-
-
-
-
-
 
 Notes: Here
 is the note!
@@ -83,8 +72,6 @@ This is an overloaded member function, provided for convenience.
 It differs from the above function only in what argument(s) it accepts.
 
 someword
-
-
 
 Title: The paragraph title
 The paragraph text.
@@ -121,10 +108,8 @@ TODO: Some very important task
 :type b: float
 :param b: B is mentioned again...
 
-
 very long
 text with tags <sometag>
-
 
 Version: 0.0.0.2
 
@@ -147,14 +132,11 @@ Quote:
 Quotation block.
  ("http://www.worldwildlife.org/who/index.html")
 
-
 center
 ``this is code``
 
-
 Starts an item title.
     Starts an item description.
-
 
 Starts a piece of text displayed in a typewriter font.
 
@@ -178,12 +160,8 @@ Image: src="slika.png"
 Meta tag.
 Multicol is ignored by doxygen.
 
-
-
 * List item 1.
 * List item 2.
-
-
 
 Starts a new paragraph.
 
@@ -196,7 +174,6 @@ Starts a section of text displayed in a smaller font.
  Starts a piece of text displayed in subscript.
  Starts a piece of text displayed in superscript.
 
-
 Animals
 | Column 1 | Column 2 |
 -----------------------
@@ -204,20 +181,15 @@ Animals
 | cat      | mouse    |
 | horse    | parrot   |
 
-
 Starts a piece of text displayed in a typewriter font.
 
 Starts a piece of text displayed in a typewriter font.
-
-
 
 * List item 1.
 * List item 2.
 * List item 3.
 
-
 *Starts a piece of text displayed in an italic font.*
-
 
 <u>underlined \b bold text - doxy commands are ignored inside 'htmlonly' section </u>""")
 
