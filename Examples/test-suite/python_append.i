@@ -8,10 +8,13 @@ Testcase to test %pythonprepend and %pythonappend %pythoncode %pythonbegin
 mypath = os.path.dirname("/a/b/c/d.txt")
 funcpath = None
 staticfuncpath = None
+
 def grabpath():
     return funcpath
+
 def grabstaticpath():
     return staticfuncpath
+
 def clearstaticpath():
     global staticfuncpath
     staticfuncpath = None
@@ -28,13 +31,11 @@ funcpath = mypath
 
 %pythonappend Test::static_func %{
 staticfuncpath = os.path.basename(staticfuncpath)
-pass   
 %}
 
 %pythonprepend Test::static_func {
 global staticfuncpath
 staticfuncpath = mypath
-pass
 }
 
 %pythonbegin %{

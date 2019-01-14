@@ -186,13 +186,16 @@ SwigPython_std_pair_setitem (PyObject *a, Py_ssize_t b, PyObject *c)
 %extend {      
 %pythoncode %{def __len__(self):
     return 2
+
 def __repr__(self):
     return str((self.first, self.second))
+
 def __getitem__(self, index): 
     if not (index % 2):
         return self.first
     else:
         return self.second
+
 def __setitem__(self, index, val):
     if not (index % 2):
         self.first = val

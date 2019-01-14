@@ -726,20 +726,20 @@ public:
 	Printv(f_shadow, tab4, tab4, "object.__setattr__(self, name, value)\n", NIL);
 	Printv(f_shadow,
 	       tab4, "else:\n",
-	       tab4, tab4, "raise AttributeError(\"You cannot add attributes to %s\" % self)\n\n",
-	        "\n", "def _swig_setattr(self, class_type, name, value):\n", tab4, "return _swig_setattr_nondynamic(self, class_type, name, value, 0)\n\n", NIL);
+	       tab4, tab4, "raise AttributeError(\"You cannot add attributes to %s\" % self)\n",
+	        "\n", "def _swig_setattr(self, class_type, name, value):\n", tab4, "return _swig_setattr_nondynamic(self, class_type, name, value, 0)\n", NIL);
 
 	Printv(f_shadow,
 	       "\n", "def _swig_getattr(self, class_type, name):\n",
 	       tab4, "if name == \"thisown\":\n", tab8, "return self.this.own()\n",
 	       tab4, "method = class_type.__swig_getmethods__.get(name, None)\n",
 	       tab4, "if method:\n", tab8, "return method(self)\n",
-	       tab4, "raise AttributeError(\"'%s' object has no attribute '%s'\" % (class_type.__name__, name))\n\n", NIL);
+	       tab4, "raise AttributeError(\"'%s' object has no attribute '%s'\" % (class_type.__name__, name))\n", NIL);
 
 	Printv(f_shadow,
 	        "\n", "def _swig_repr(self):\n",
 	       tab4, "try:\n", tab8, "strthis = \"proxy of \" + self.this.__repr__()\n",
-	       tab4, "except __builtin__.Exception:\n", tab8, "strthis = \"\"\n", tab4, "return \"<%s.%s; %s >\" % (self.__class__.__module__, self.__class__.__name__, strthis,)\n\n", NIL);
+	       tab4, "except __builtin__.Exception:\n", tab8, "strthis = \"\"\n", tab4, "return \"<%s.%s; %s >\" % (self.__class__.__module__, self.__class__.__name__, strthis,)\n", NIL);
       }
 
       Printv(f_shadow,  "\n",
@@ -758,7 +758,7 @@ public:
 	     tab4, tab4, tab4, "set(self, name, value)\n",
 	     tab4, tab4, "else:\n",
 	     tab4, tab4, tab4, "raise AttributeError(\"You cannot add instance attributes to %s\" % self)\n",
-	     tab4, "return set_instance_attr\n\n", NIL);
+	     tab4, "return set_instance_attr\n", NIL);
 
       Printv(f_shadow,  "\n",
 	     "def _swig_setattr_nondynamic_class_variable(set):\n",
@@ -767,26 +767,25 @@ public:
 	     tab4, tab4, tab4, "set(cls, name, value)\n",
 	     tab4, tab4, "else:\n",
 	     tab4, tab4, tab4, "raise AttributeError(\"You cannot add class attributes to %s\" % cls)\n",
-	     tab4, "return set_class_attr\n\n", NIL);
+	     tab4, "return set_class_attr\n", NIL);
 
       Printv(f_shadow,  "\n",
 	     "def _swig_add_metaclass(metaclass):\n",
 	     tab4, "\"\"\"Class decorator for adding a metaclass to a SWIG wrapped class - a slimmed down version of six.add_metaclass\"\"\"\n",
 	     tab4, "def wrapper(cls):\n",
 	     tab4, tab4, "return metaclass(cls.__name__, cls.__bases__, cls.__dict__.copy())\n",
-	     tab4, "return wrapper\n\n", NIL);
+	     tab4, "return wrapper\n", NIL);
 
       Printv(f_shadow,  "\n",
 	     "class _SwigNonDynamicMeta(type):\n",
 	     tab4, "\"\"\"Meta class to enforce nondynamic attributes (no new attributes) for a class\"\"\"\n",
-	     tab4, "__setattr__ = _swig_setattr_nondynamic_class_variable(type.__setattr__)\n",
-	     "\n", NIL);
-
-      Printv(f_shadow, "\n", NIL);
+	     tab4, "__setattr__ = _swig_setattr_nondynamic_class_variable(type.__setattr__)\n", NIL);
 
       if (directorsEnabled()) {
-	Printv(f_shadow, "import weakref\n\n", NIL);
+	Printv(f_shadow, "\n", "import weakref\n", NIL);
       }
+
+      Printv(f_shadow, "\n", "# End SWIG internals\n\n", NIL);
     }
     // Include some information in the code
     Printf(f_header, "\n/*-----------------------------------------------\n              @(target):= %s.so\n\
@@ -892,7 +891,7 @@ public:
       }
 
       if (Len(f_shadow_begin) > 0)
-	Printv(f_shadow_py, "\n", f_shadow_begin, "\n", NIL);
+	Printv(f_shadow_py, "\n", f_shadow_begin, NIL);
 
       Printv(f_shadow_py, "\nfrom sys import version_info as _swig_python_version_info\n", NULL);
       Printv(f_shadow_py, "if _swig_python_version_info < (2, 7, 0):\n", NULL);
@@ -903,13 +902,15 @@ public:
 
       if (moduleimport) {
 	Replaceall(moduleimport, "$module", module);
+	clean_newlines(moduleimport);
 	Printv(f_shadow_py, moduleimport, "\n", NIL);
       } else {
 	Printv(f_shadow_py, default_import_code, NIL);
       }
 
-      Printv(f_shadow_py, "\n", f_shadow, "\n", NIL);
-      Printv(f_shadow_py, f_shadow_stubs, "\n", NIL);
+      Printv(f_shadow_py, "\n", f_shadow, NIL);
+      if (Len(f_shadow_stubs) > 0)
+	Printv(f_shadow_py, "\n", f_shadow_stubs, NIL);
       Delete(f_shadow_py);
     }
 
@@ -2285,6 +2286,25 @@ public:
   }
 
   /* ------------------------------------------------------------
+   * clean_newlines()
+   *
+   * Remove extraneous leading or trailing newlines
+   * ------------------------------------------------------------ */
+
+  void clean_newlines(String *str)
+  {
+    char *t = Char(str);
+    /* Check for and remove leading newlines */
+    while (Len(str) > 0 && *t == '\n') {
+      Delitem(str, 0);
+    }
+    /* Check for and remove trailing newlines */
+    while (Len(str) > 0 && *(t + Len(str) - 1) == '\n') {
+      Delitem(str, DOH_END);
+    }
+  }
+
+  /* ------------------------------------------------------------
    * have_pythonprepend()
    *
    * Check if there is a %pythonprepend directive and it has text
@@ -2308,6 +2328,7 @@ public:
       Delitem(str, 0);
       Delitem(str, DOH_END);
     }
+    clean_newlines(str);
     return str;
   }
 
@@ -2340,6 +2361,7 @@ public:
       Delitem(str, 0);
       Delitem(str, DOH_END);
     }
+    clean_newlines(str);
     return str;
   }
 
@@ -2410,10 +2432,10 @@ public:
       if (have_docstring(n))
 	Printv(f_dest, tab4, docstring(n, AUTODOC_FUNC, tab4, true), "\n", NIL);
       if (have_pythonprepend(n))
-	Printv(f_dest, indent_pythoncode(pythonprepend(n), tab4, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
+	Printv(f_dest, "\n", indent_pythoncode(pythonprepend(n), tab4, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
       if (have_pythonappend(n)) {
 	Printv(f_dest, tab4 "val = ", funcCall(name, callParms), "\n", NIL);
-	Printv(f_dest, indent_pythoncode(pythonappend(n), tab4, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n", NIL);
+	Printv(f_dest, "\n", indent_pythoncode(pythonappend(n), tab4, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n", NIL);
 	Printv(f_dest, tab4 "return val\n", NIL);
       } else {
 	Printv(f_dest, tab4 "return ", funcCall(name, callParms), "\n", NIL);
@@ -3664,13 +3686,16 @@ public:
       }
 
       if (f_s) {
+	Printv(f_s, "\n",NIL);
 	if (needs_swigconstant(n)) {
-	  Printv(f_s, "\n",NIL);
 	  Printv(f_s, module, ".", iname, "_swigconstant(",module,")\n", NIL);
 	}
 	Printv(f_s, iname, " = ", module, ".", iname, "\n", NIL);
-	if (have_docstring(n))
-	  Printv(f_s, docstring(n, AUTODOC_CONST, tab4), "\n", NIL);
+	if (have_docstring(n)) {
+	  String *docstr = docstring(n, AUTODOC_CONST, tab4);
+	  if (Len(docstr) > 0)
+	    Printv(f_s, docstr, "\n", NIL);
+	}
       }
     }
     return SWIG_OK;
@@ -3889,7 +3914,7 @@ public:
       } else {
 	String *symname = Getattr(n, "sym:name");
 	String *mrename = Swig_name_disown(NSPACE_TODO, symname);	//Getattr(n, "name"));
-	Printv(f_shadow, tab4, "def __disown__(self):\n", NIL);
+	Printv(f_shadow, "\n", tab4, "def __disown__(self):\n", NIL);
 #ifdef USE_THISOWN
 	Printv(f_shadow, tab8, "self.thisown = 0\n", NIL);
 #else
@@ -4471,7 +4496,7 @@ public:
 	  if (GetFlag(n, "feature:python:nondynamic"))
 	    Printv(f_shadow, "@_swig_add_metaclass(_SwigNonDynamicMeta)\n", NIL);
 	}
-	Printv(f_shadow, "class ", class_name, NIL);
+	Printv(f_shadow, "\n", "class ", class_name, NIL);
 
 	if (Len(base_class)) {
 	  Printf(f_shadow, "(%s)", base_class);
@@ -4491,10 +4516,10 @@ public:
 	if (have_docstring(n)) {
 	  String *str = docstring(n, AUTODOC_CLASS, tab4);
 	  if (str && Len(str))
-	    Printv(f_shadow, tab4, str, "\n\n", NIL);
+	    Printv(f_shadow, tab4, str, "\n", NIL);
 	}
 
-	Printv(f_shadow, tab4, "thisown = property(lambda x: x.this.own(), ", "lambda x, v: x.this.own(v), doc='The membership flag')\n", NIL);
+	Printv(f_shadow, "\n", tab4, "thisown = property(lambda x: x.this.own(), ", "lambda x, v: x.this.own(v), doc='The membership flag')\n", NIL);
 	/* Add static attribute */
 	if (GetFlag(n, "feature:python:nondynamic")) {
 	  Printv(f_shadow_file, tab4, "__setattr__ = _swig_setattr_nondynamic_instance_variable(object.__setattr__)\n", NIL);
@@ -4578,7 +4603,7 @@ public:
       if (!have_repr && !builtin) {
 	/* Supply a repr method for this class  */
 	String *rname = SwigType_namestr(real_classname);
-	Printv(f_shadow_file, tab4, "__repr__ = _swig_repr\n", NIL);
+	Printv(f_shadow_file, "\n", tab4, "__repr__ = _swig_repr\n", NIL);
 	Delete(rname);
       }
 
@@ -4599,7 +4624,8 @@ public:
       }
 
       shadow_indent = 0;
-      Printf(f_shadow_file, "%s\n", f_shadow_stubs);
+      if (Len(f_shadow_stubs) > 0)
+	Printf(f_shadow_file, "%s", f_shadow_stubs, Len(f_shadow_stubs));
       Clear(f_shadow_stubs);
     }
 
@@ -4697,7 +4723,8 @@ public:
 	  String *pyaction = NewStringf("%s.%s", module, fullname);
 	  Replaceall(pycode, "$action", pyaction);
 	  Delete(pyaction);
-	  Printv(f_shadow, pycode, "\n", NIL);
+	  clean_newlines(pycode);
+	  Printv(f_shadow, "\n", pycode, "\n", NIL);
 	  Delete(pycode);
 	  fproxy = 0;
 	} else {
@@ -4717,15 +4744,15 @@ public:
 	      Printv(f_shadow, tab8, docstring(n, AUTODOC_METHOD, tab8), "\n", NIL);
 	    if (have_pythonprepend(n)) {
 	      fproxy = 0;
-	      Printv(f_shadow, indent_pythoncode(pythonprepend(n), tab8, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
+	      Printv(f_shadow, "\n", indent_pythoncode(pythonprepend(n), tab8, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
 	    }
 	    if (have_pythonappend(n)) {
 	      fproxy = 0;
 	      Printv(f_shadow, tab8, "val = ", funcCall(fullname, callParms), "\n", NIL);
-	      Printv(f_shadow, indent_pythoncode(pythonappend(n), tab8, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n", NIL);
-	      Printv(f_shadow, tab8, "return val\n\n", NIL);
+	      Printv(f_shadow, "\n", indent_pythoncode(pythonappend(n), tab8, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n", NIL);
+	      Printv(f_shadow, tab8, "return val\n", NIL);
 	    } else {
-	      Printv(f_shadow, tab8, "return ", funcCall(fullname, callParms), "\n\n", NIL);
+	      Printv(f_shadow, tab8, "return ", funcCall(fullname, callParms), "\n", NIL);
 	    }
 	  }
 	}
@@ -4803,7 +4830,7 @@ public:
 	if (have_docstring(n))
 	  Printv(f_shadow, tab8, docstring(n, AUTODOC_STATICFUNC, tab8), "\n", NIL);
 	if (have_pythonprepend(n))
-	  Printv(f_shadow, indent_pythoncode(pythonprepend(n), tab8, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
+	  Printv(f_shadow, "\n", indent_pythoncode(pythonprepend(n), tab8, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
 	if (have_pythonappend(n)) {
 	  Printv(f_shadow, tab8, "val = ", funcCall(Swig_name_member(NSPACE_TODO, class_name, symname), callParms), "\n", NIL);
 	  Printv(f_shadow, indent_pythoncode(pythonappend(n), tab8, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n", NIL);
@@ -4884,7 +4911,8 @@ public:
 	      String *pyaction = NewStringf("%s.%s", module, subfunc);
 	      Replaceall(pycode, "$action", pyaction);
 	      Delete(pyaction);
-	      Printv(f_shadow, pycode, "\n", NIL);
+	      clean_newlines(pycode);
+	      Printv(f_shadow, "\n", pycode, "\n", NIL);
 	      Delete(pycode);
 	    } else {
 	      String *pass_self = NewString("");
@@ -4909,11 +4937,11 @@ public:
 	      if (have_docstring(n))
 		Printv(f_shadow, tab8, docstring(n, AUTODOC_CTOR, tab8), "\n", NIL);
 	      if (have_pythonprepend(n))
-		Printv(f_shadow, indent_pythoncode(pythonprepend(n), tab8, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
+		Printv(f_shadow, "\n", indent_pythoncode(pythonprepend(n), tab8, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
 	      Printv(f_shadow, pass_self, NIL);
 	      Printv(f_shadow, tab8, module, ".", class_name, "_swiginit(self, ", funcCall(subfunc, callParms), ")\n", NIL);
 	      if (have_pythonappend(n))
-		Printv(f_shadow, indent_pythoncode(pythonappend(n), tab8, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n\n", NIL);
+		Printv(f_shadow, "\n", indent_pythoncode(pythonappend(n), tab8, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n", NIL);
 	      Delete(pass_self);
 	    }
 	    have_constructor = 1;
@@ -4926,24 +4954,25 @@ public:
 	      String *pycode = indent_pythoncode(Getattr(n, "feature:shadow"), "", Getfile(n), Getline(n), "%feature(\"shadow\")");
 	      String *pyaction = NewStringf("%s.%s", module, subfunc);
 	      Replaceall(pycode, "$action", pyaction);
+	      clean_newlines(pycode);
 	      Delete(pyaction);
-	      Printv(f_shadow_stubs, pycode, "\n", NIL);
+	      Printv(f_shadow_stubs, "\n", pycode, "\n", NIL);
 	      Delete(pycode);
 	    } else {
 	      String *parms = make_pyParmList(n, false, false, allow_kwargs);
 	      String *callParms = make_pyParmList(n, false, true, allow_kwargs);
 
-	      Printv(f_shadow_stubs, "\ndef ", symname, "(", parms, ")", returnTypeAnnotation(n), ":\n", NIL);
+	      Printv(f_shadow_stubs, "\n", "def ", symname, "(", parms, ")", returnTypeAnnotation(n), ":\n", NIL);
 	      if (have_docstring(n))
 		Printv(f_shadow_stubs, tab4, docstring(n, AUTODOC_CTOR, tab4), "\n", NIL);
 	      if (have_pythonprepend(n))
-		Printv(f_shadow_stubs, indent_pythoncode(pythonprepend(n), tab4, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
+		Printv(f_shadow_stubs, "\n", indent_pythoncode(pythonprepend(n), tab4, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
 	      Printv(f_shadow_stubs, tab4, "val = ", funcCall(subfunc, callParms), "\n", NIL);
 #ifdef USE_THISOWN
 	      Printv(f_shadow_stubs, tab4, "val.thisown = 1\n", NIL);
 #endif
 	      if (have_pythonappend(n))
-		Printv(f_shadow_stubs, indent_pythoncode(pythonappend(n), tab4, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n", NIL);
+		Printv(f_shadow_stubs, "\n", indent_pythoncode(pythonappend(n), tab4, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n", NIL);
 	      Printv(f_shadow_stubs, tab4, "return val\n", NIL);
 	    }
 	  } else {
@@ -4984,11 +5013,12 @@ public:
 	String *pycode = indent_pythoncode(Getattr(n, "feature:shadow"), tab4, Getfile(n), Getline(n), "%feature(\"shadow\")");
 	String *pyaction = NewStringf("%s.%s", module, Swig_name_destroy(NSPACE_TODO, symname));
 	Replaceall(pycode, "$action", pyaction);
+	clean_newlines(pycode);
 	Delete(pyaction);
-	Printv(f_shadow, pycode, "\n", NIL);
+	Printv(f_shadow, "\n", pycode, "\n", NIL);
 	Delete(pycode);
       } else {
-	Printv(f_shadow, tab4, "__swig_destroy__ = ", module, ".", Swig_name_destroy(NSPACE_TODO, symname), "\n", NIL);
+	Printv(f_shadow, "\n", tab4, "__swig_destroy__ = ", module, ".", Swig_name_destroy(NSPACE_TODO, symname), "\n", NIL);
 	if (!have_pythonprepend(n) && !have_pythonappend(n)) {
 	  return SWIG_OK;
 	}
@@ -4996,7 +5026,7 @@ public:
 	if (have_docstring(n))
 	  Printv(f_shadow, tab8, docstring(n, AUTODOC_DTOR, tab8), "\n", NIL);
 	if (have_pythonprepend(n))
-	  Printv(f_shadow, indent_pythoncode(pythonprepend(n), tab8, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
+	  Printv(f_shadow, "\n", indent_pythoncode(pythonprepend(n), tab8, Getfile(n), Getline(n), "%pythonprepend or %feature(\"pythonprepend\")"), "\n", NIL);
 #ifdef USE_THISOWN
 	Printv(f_shadow, tab8, "try:\n", NIL);
 	Printv(f_shadow, tab8, tab4, "if self.thisown:", module, ".", Swig_name_destroy(NSPACE_TODO, symname), "(self)\n", NIL);
@@ -5004,9 +5034,8 @@ public:
 #else
 #endif
 	if (have_pythonappend(n))
-	  Printv(f_shadow, indent_pythoncode(pythonappend(n), tab8, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n", NIL);
+	  Printv(f_shadow, "\n", indent_pythoncode(pythonappend(n), tab8, Getfile(n), Getline(n), "%pythonappend or %feature(\"pythonappend\")"), "\n", NIL);
 	Printv(f_shadow, tab8, "pass\n", NIL);
-	Printv(f_shadow, "\n", NIL);
       }
     }
     return SWIG_OK;
@@ -5030,7 +5059,7 @@ public:
       String *setname = Swig_name_set(NSPACE_TODO, mname);
       String *getname = Swig_name_get(NSPACE_TODO, mname);
       int assignable = is_assignable(n);
-      Printv(f_shadow, tab4, symname, " = property(", module, ".", getname, NIL);
+      Printv(f_shadow, "\n", tab4, symname, " = property(", module, ".", getname, NIL);
       if (assignable)
 	Printv(f_shadow, ", ", module, ".", setname, NIL);
       if (have_docstring(n))
@@ -5097,7 +5126,7 @@ public:
 	  DelWrapper(f);
 	}
 	if (!builtin) {
-	  Printv(f_shadow, tab4, symname, " = property(", module, ".", getname, NIL);
+	  Printv(f_shadow, "\n", tab4, symname, " = property(", module, ".", getname, NIL);
 	  if (assignable)
 	    Printv(f_shadow, ", ", module, ".", setname, NIL);
 	  if (have_docstring(n))
@@ -5173,12 +5202,14 @@ public:
     if (!ImportMode && (Cmp(section, "python") == 0 || Cmp(section, "shadow") == 0)) {
       if (shadow) {
 	String *pycode = indent_pythoncode(code, shadow_indent, Getfile(n), Getline(n), "%pythoncode or %insert(\"python\") block");
-	Printv(f_shadow, pycode, NIL);
+	clean_newlines(pycode);
+	Printv(f_shadow, "\n", pycode, "\n", NIL);
 	Delete(pycode);
       }
     } else if (!ImportMode && (Cmp(section, "pythonbegin") == 0)) {
       if (shadow) {
 	String *pycode = indent_pythoncode(code, "", Getfile(n), Getline(n), "%pythonbegin or %insert(\"pythonbegin\") block");
+	clean_newlines(pycode);
 	Printv(f_shadow_begin, pycode, NIL);
 	Delete(pycode);
       }
