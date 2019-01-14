@@ -15,7 +15,7 @@ comment_verifier.check(inspect.getdoc(doxygen_misc_constructs.getAddress),
 :type isGetSize: boolean
 :param isGetSize: if set, for every object location both address and size are returned
 
-Connection::getId() """)
+Connection::getId()""")
 
 comment_verifier.check(inspect.getdoc(doxygen_misc_constructs.CConnectionConfig),
     r"""This class contains information for connection to winIDEA. Its methods

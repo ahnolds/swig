@@ -15,16 +15,12 @@ check(inspect.getdoc(DocStrings.docstring1),
     "  line 1\n"
     "line 2\n"
     "\n"
-    "\n"
-    "\n"
     "line 3"
     )
 
 check(inspect.getdoc(DocStrings.docstring2),
     "line 1\n"
     "  line 2\n"
-    "\n"
-    "\n"
     "\n"
     "  line 3"
     )
@@ -33,16 +29,12 @@ check(inspect.getdoc(DocStrings.docstring3),
     "line 1\n"
     "  line 2\n"
     "\n"
-    "\n"
-    "\n"
     "  line 3"
     )
 
 check(inspect.getdoc(DocStrings.docstring4),
     "line 1\n"
     "  line 2\n"
-    "\n"
-    "\n"
     "\n"
     "  line 3"
     )
@@ -51,16 +43,12 @@ check(inspect.getdoc(DocStrings.docstring5),
     "line 1\n"
     "  line 2\n"
     "\n"
-    "\n"
-    "\n"
     "  line 3"
     )
 
 check(inspect.getdoc(DocStrings.docstring6),
     "line 1\n"
     "  line 2\n"
-    "\n"
-    "\n"
     "\n"
     "  line 3"
     )

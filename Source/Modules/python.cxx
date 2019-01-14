@@ -1542,21 +1542,13 @@ public:
 	Delitem(docstr, DOH_END);
       }
 
-      int num_replacements;
-      do {
-	num_replacements = DohReplace(docstr, "\n\n\n", "\n\n", DOH_REPLACE_FIRST);
-      } while (num_replacements > 0);
-      clean_newlines(docstr);
+      clean_docstring(docstr);
     }
 
     if (Getattr(n, "feature:autodoc") && !GetFlag(n, "feature:noautodoc")) {
       String *autodoc = make_autodoc(n, ad_type, low_level);
       if (autodoc && Len(autodoc) > 0) {
-	int num_replacements;
-	do {
-	  num_replacements = DohReplace(autodoc, "\n\n\n", "\n\n", DOH_REPLACE_FIRST);
-	} while (num_replacements > 0);
-	clean_newlines(autodoc);
+	clean_docstring(autodoc);
 
 	if (docstr && Len(docstr)) {
 	  Append(autodoc, "\n\n");
@@ -1576,11 +1568,7 @@ public:
 	docstr = Getattr(n, "python:docstring");
 	if (!docstr && doxygenTranslator->hasDocumentation(n)) {
 	  docstr = doxygenTranslator->getDocumentation(n, 0);
-	  int num_replacements;
-	  do {
-	    num_replacements = DohReplace(docstr, "\n\n\n", "\n\n", DOH_REPLACE_FIRST);
-	  } while (num_replacements > 0);
-	  clean_newlines(docstr);
+	  clean_docstring(docstr);
 
 	  // Avoid rebuilding it again the next time: notice that we can't do
 	  // this for the combined doc string as autodoc part of it depends on
@@ -2305,20 +2293,50 @@ public:
   /* ------------------------------------------------------------
    * clean_newlines()
    *
-   * Remove extraneous leading or trailing newlines
+   * Remove extraneous leading or trailing newlines or
+   * trailing whitespace
    * ------------------------------------------------------------ */
 
   void clean_newlines(String *str)
   {
     char *t = Char(str);
+    char c;
     /* Check for and remove leading newlines */
     while (Len(str) > 0 && *t == '\n') {
       Delitem(str, 0);
     }
-    /* Check for and remove trailing newlines */
-    while (Len(str) > 0 && *(t + Len(str) - 1) == '\n') {
-      Delitem(str, DOH_END);
+    /* Check for and remove trailing newlines or whitespace */
+    while (Len(str) > 0) {
+      c = *(t + Len(str) - 1);
+      if (c == '\n' || c == '\t' || c == ' ')
+        Delitem(str, DOH_END);
+      else
+        break;
     }
+  }
+
+  /* ------------------------------------------------------------
+   * clean_docstring()
+   *
+   * Remove duplicate blank lines and leading or trailing newlines
+   * ------------------------------------------------------------ */
+
+  void clean_docstring(String* docstr) {
+    int num_replacements;
+
+    /* Remove trailing whitespace from a line */
+    do {
+      num_replacements  = DohReplace(docstr,  " \n", "\n", DOH_REPLACE_FIRST);
+      num_replacements += DohReplace(docstr, "\t\n", "\n", DOH_REPLACE_FIRST);
+    } while (num_replacements > 0);
+
+    /* Remove multiple blank lines (1 blank is ok, 2+ blanks will be consolidated) */
+    do {
+      num_replacements = DohReplace(docstr, "\n\n\n", "\n\n", DOH_REPLACE_FIRST);
+    } while (num_replacements > 0);
+
+    /* Remove any leading or trailing newlines */
+    clean_newlines(docstr);
   }
 
   /* ------------------------------------------------------------
