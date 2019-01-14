@@ -19,6 +19,19 @@ skip = True
 
 check(inspect.getdoc(A), "Proxy of C++ A class.", "::A")
 check(inspect.getdoc(A.funk), "just a string.")
+check(inspect.getdoc(A.funk2),
+      "funk2(A self, int a) -> int\n"
+      "\n"
+      "Parameters\n"
+      "----------\n"
+      "a: int\n"
+      "\n"
+      "it is\n"
+      "great\n"
+      "\n"
+      "to have\n"
+      "\n"
+      "extra documentation")
 check(inspect.getdoc(A.func0),
       "func0(self, arg2, hello) -> int")
 check(inspect.getdoc(A.func1),

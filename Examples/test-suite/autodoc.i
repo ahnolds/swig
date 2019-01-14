@@ -31,6 +31,17 @@
 
 %feature("autodoc","just a string.") A::funk; // names
 
+// try autodoc + docstring
+%feature("autodoc","3") A::funk2;
+%feature("docstring")   A::funk2 %{
+it is
+great
+
+to have
+
+
+extra documentation
+%}
 %inline {
 
   enum Hola {
@@ -40,6 +51,7 @@
   struct A {
     A(int a, short b, Hola h) {}
     int funk(int a) { return a; }
+    int funk2(int a) { return a; }
 
     int func0(short, int c, int d) { return c; }
     int func1(short, int c, int d) { return c; }    

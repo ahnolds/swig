@@ -1541,13 +1541,25 @@ public:
 	Delitem(docstr, 0);
 	Delitem(docstr, DOH_END);
       }
+
+      int num_replacements;
+      do {
+	num_replacements = DohReplace(docstr, "\n\n\n", "\n\n", DOH_REPLACE_FIRST);
+      } while (num_replacements > 0);
+      clean_newlines(docstr);
     }
 
     if (Getattr(n, "feature:autodoc") && !GetFlag(n, "feature:noautodoc")) {
       String *autodoc = make_autodoc(n, ad_type, low_level);
       if (autodoc && Len(autodoc) > 0) {
+	int num_replacements;
+	do {
+	  num_replacements = DohReplace(autodoc, "\n\n\n", "\n\n", DOH_REPLACE_FIRST);
+	} while (num_replacements > 0);
+	clean_newlines(autodoc);
+
 	if (docstr && Len(docstr)) {
-	  Append(autodoc, "\n");
+	  Append(autodoc, "\n\n");
 	  Append(autodoc, docstr);
 	}
 
