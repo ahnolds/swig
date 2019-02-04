@@ -3313,10 +3313,6 @@ public:
         Delete(h);
       }
       Setattr(h, "getter", "SwigPyObject_get___dict__");
-      if (!Getattr(h, "doc")) {
-	Setattr(n, "doc:high:name", Getattr(n, "name"));
-	Setattr(h, "doc", cdocstring(n, AUTODOC_VAR));
-      }
     }
 
     if (builtin_getter) {
@@ -4031,7 +4027,7 @@ public:
       String *gspair = NewStringf("%s_%s_getset", symname, memname);
       Printf(f, "static SwigPyGetSet %s = { %s, %s };\n", gspair, getter ? getter : "0", setter ? setter : "0");
       String *doc = Getattr(mgetset, "doc");
-      if (!doc)
+      if (!doc || Len(doc) == 0)
 	doc = NewStringf("%s.%s", name, memname);
       String *entry = NewStringf("{ (char *)\"%s\", %s, %s, (char *)\"%s\", &%s }", memname, getter_closure, setter_closure, doc, gspair);
       if (GetFlag(mgetset, "static")) {
