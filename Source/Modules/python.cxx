@@ -4381,14 +4381,15 @@ public:
     File *f_shadow_file = f_shadow;
     Node *base_node = NULL;
 
+    /* The class name is used for docstrings in the C code, so save it even if not using shadow */
+    class_name = Getattr(n, "sym:name");
+    real_classname = Getattr(n, "name");
+
     if (shadow) {
 
       /* Create new strings for building up a wrapper function */
       have_constructor = 0;
       have_repr = 0;
-
-      class_name = Getattr(n, "sym:name");
-      real_classname = Getattr(n, "name");
 
       if (!addSymbol(class_name, n))
 	return SWIG_ERROR;
