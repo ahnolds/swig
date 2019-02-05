@@ -63,6 +63,7 @@ static String *builtin_closures_code = 0;
 
 static String *methods;
 static String *methods_proxydocs;
+static String *constructor_docs;
 static String *class_name;
 static String *shadow_indent = 0;
 static int in_class = 0;
@@ -574,6 +575,7 @@ public:
     const_code = NewString("");
     methods = NewString("");
     methods_proxydocs = NewString("");
+    constructor_docs = NewString("");
 
     Swig_banner(f_begin);
 
@@ -805,6 +807,12 @@ public:
     Append(const_code, "static swig_const_info swig_const_table[] = {\n");
     Append(methods, "static PyMethodDef SwigMethods[] = {\n");
     Append(methods_proxydocs, "static PyMethodDef SwigMethods_proxydocs[] = {\n");
+    Append(constructor_docs, "#if PY_VERSION_HEX >= 0x03070000\n");
+    Append(constructor_docs, "#  define SWIG_DOCCAST\n");
+    Append(constructor_docs, "#else\n");
+    Append(constructor_docs, "#  define SWIG_DOCCAST (char*)\n");
+    Append(constructor_docs, "#endif\n");
+    Append(constructor_docs, "static struct wrapperbase SwigConstructorDocs[] = {\n");
 
     /* the method exported for replacement of new.instancemethod in Python 3 */
     add_pyinstancemethod_new();
@@ -833,6 +841,9 @@ public:
     Append(methods_proxydocs, "\t { NULL, NULL, 0, NULL }\n");
     Append(methods_proxydocs, "};\n");
     Printf(f_wrappers, "%s\n", methods_proxydocs);
+    Append(constructor_docs, "\t { NULL, 0, NULL, NULL, NULL, 0, NULL }\n");
+    Append(constructor_docs, "};\n");
+    Printf(f_wrappers, "%s\n", constructor_docs);
 
     /* Need to define the function to find the proxy documentation after the proxy docs themselves */
     Printv(f_wrappers, "SWIGRUNTIME PyMethodDef *SWIG_PythonGetProxyDoc(const char *name)\n",
@@ -4347,6 +4358,7 @@ public:
     Printv(f_init, "#endif\n", NIL);
     Printv(f_init, "    }\n", NIL);
     Printv(f_init, "    Py_INCREF(builtin_pytype);\n", NIL);
+    Printv(f_init, "    SWIG_Python_FixBuiltinInitDoc(builtin_pytype, \"", symname, "\");\n", NIL);
     Printf(f_init, "    PyModule_AddObject(m, \"%s\", (PyObject *)builtin_pytype);\n", symname);
     Printf(f_init, "    SwigPyBuiltin_AddPublicSymbol(public_interface, \"%s\");\n", symname);
     Printv(f_init, "    d = md;\n", NIL);
@@ -4909,6 +4921,11 @@ public:
 	      Delete(pass_self);
 	    }
 	    have_constructor = 1;
+	  } else {
+	    /* Create an entry for the slot wrapper for the init func.  It will be filled in
+	       with real conents when the module is loaded, but use the symbol name for now so
+	       so we can find the entry later */
+	    Printf(constructor_docs, "\t { SWIG_DOCCAST \"%s\", 0, NULL, NULL, SWIG_DOCCAST \"%s\", 0, NULL },\n", symname, cdocstring(n, AUTODOC_CTOR));
 	  }
 	} else {
 	  /* Hmmm. We seem to be creating a different constructor.  We're just going to create a

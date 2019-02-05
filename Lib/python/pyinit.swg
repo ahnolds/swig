@@ -298,6 +298,37 @@ SWIG_Python_FixMethods(PyMethodDef *methods,
   }
 } 
 
+/* -----------------------------------------------------------------------------*/
+/* Fix the docstring for the __init__ function for builtin classes */
+/* -----------------------------------------------------------------------------*/
+
+SWIGINTERN void
+SWIG_Python_FixBuiltinInitDoc(PyTypeObject *builtin_pytype, const char* name) {
+  PyObject *init_wrapper = PyDict_GetItemString(builtin_pytype->tp_dict, "__init__");
+  int i;
+  if (PyObject_TypeCheck(init_wrapper, &PyWrapperDescr_Type)) {
+    PyWrapperDescrObject *init_descriptor = (PyWrapperDescrObject *) init_wrapper;
+    /* Find the matching field in the generated list */
+    for (i = 0; SwigConstructorDocs[i].name != NULL; ++i) {
+      if (strcmp(SwigConstructorDocs[i].name, name) == 0) {
+	/* Copy all the elements other than the docstring */
+	SwigConstructorDocs[i].name = init_descriptor->d_base->name;
+	SwigConstructorDocs[i].offset = init_descriptor->d_base->offset;
+	SwigConstructorDocs[i].function = init_descriptor->d_base->function;
+	SwigConstructorDocs[i].wrapper = init_descriptor->d_base->wrapper;
+	SwigConstructorDocs[i].flags = init_descriptor->d_base->flags;
+	/* Need to INCREF the name_strobj since we are creating a new reference to it */
+	Py_INCREF(init_descriptor->d_base->name_strobj);
+	SwigConstructorDocs[i].name_strobj = init_descriptor->d_base->name_strobj;
+	/* Update the actual wrapperbase for this particular slot */
+	init_descriptor->d_base = &SwigConstructorDocs[i];
+	break;
+      }
+    }
+  }
+}
+
+
 #ifdef __cplusplus
 }
 #endif

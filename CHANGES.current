@@ -7,6 +7,9 @@ the issue number to the end of the URL: https://github.com/swig/swig/issues/
 Version 4.0.0 (in progress)
 ===========================
 
+2019-02-04: ahnolds
+	    [Python] Add docstrings for __init__ functions when using -builtin
+
 2019-02-02: ahnolds
 	    [Python] Documentation enhancements for Python:
 
